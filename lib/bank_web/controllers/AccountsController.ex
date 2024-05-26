@@ -3,7 +3,11 @@ defmodule BankWeb.AccountsController do
 
   use BankWeb, :controller
 
-  def list(conn, _params) do
-    json(conn, %{status: :ok})
+  alias Bank.Account.Context
+
+  def list(conn, params) do
+    accounts = Context.all(params)
+
+    json(conn, %{data: accounts})
   end
 end
