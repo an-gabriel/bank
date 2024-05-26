@@ -7,6 +7,8 @@ defmodule BankWeb.Router do
 
   scope "/api", BankWeb do
     pipe_through :api
+
+    get "/accounts", AccountsController, :list
   end
 
   # Enable LiveDashboard and Swoosh mailbox preview in development
