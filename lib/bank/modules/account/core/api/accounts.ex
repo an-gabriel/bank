@@ -101,4 +101,8 @@ defmodule Bank.Accounts do
   def change_account(%Account{} = account, attrs \\ %{}) do
     Account.changeset(account, attrs)
   end
+
+  def json(model, permission) do
+    Map.take(model, Account.permission(permission))
+  end
 end
