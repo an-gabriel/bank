@@ -3,14 +3,12 @@ defmodule Bank.Account.Context do
   Context module for managing bank accounts.
   """
 
-  alias Bank.Accounts
-
   @doc """
   Retrieves all accounts.
 
   ## Parameters
 
-  - `_params`: Ignorado neste método.
+  - `_params`: Skipped this method.
 
   ## Returns
 
@@ -21,7 +19,7 @@ defmodule Bank.Account.Context do
     permission = :public
 
     Bank.Accounts.list_accounts()
-    |> Enum.map(&Accounts.json(&1, permission))
+    |> Enum.map(&Bank.Accounts.json(&1, permission))
   end
 
   @doc """

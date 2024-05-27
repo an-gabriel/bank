@@ -1,6 +1,6 @@
 defmodule Bank.Accounts do
   @moduledoc """
-  The Accounts context.
+  The Accounts.
   """
 
   import Ecto.Query, warn: false
@@ -38,7 +38,7 @@ defmodule Bank.Accounts do
   def get_account!(id), do: Repo.get!(Account, id)
 
   @doc """
-  Creates a account.
+  Creates an account.
 
   ## Examples
 
@@ -56,7 +56,7 @@ defmodule Bank.Accounts do
   end
 
   @doc """
-  Updates a account.
+  Updates an account.
 
   ## Examples
 
@@ -74,7 +74,7 @@ defmodule Bank.Accounts do
   end
 
   @doc """
-  Deletes a account.
+  Deletes an account.
 
   ## Examples
 
