@@ -105,4 +105,20 @@ defmodule Bank.Accounts do
   def json(model, permission) do
     Map.take(model, Account.permission(permission))
   end
+
+  @doc """
+  Gets an account by its account number.
+
+  ## Examples
+
+      iex> get_account_by_number("1234567890")
+      %Account{}
+
+      iex> get_account_by_number("0987654321")
+      nil
+
+  """
+  def get_account_by_number(account_number) do
+    Repo.one(from a in Account, where: a.account_number == ^account_number)
+  end
 end
