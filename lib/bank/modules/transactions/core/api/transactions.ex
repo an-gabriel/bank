@@ -38,14 +38,34 @@ defmodule Bank.Transactions do
   def get_transaction!(id), do: Repo.get!(Transaction, id)
 
   @doc """
+  Gets a single transaction by account number.
+
+  Raises `Ecto.NoResultsError` if no Transaction exists for the given account number.
+
+  ## Examples
+
+      iex> get_transaction_by_account_number!(12345.0)
+      %Transaction{}
+
+      iex> get_transaction_by_account_number!(67890.0)
+      ** (Ecto.NoResultsError)
+
+  """
+  def get_transactions_by_account_number(account_number) do
+    Transaction
+    |> where([t], t.account_number == ^account_number)
+    |> Repo.all()
+  end
+
+  @doc """
   Creates a transaction.
 
   ## Examples
 
-      iex> create_transaction(%{field: value})
+      create_transaction(%{field: value})
       {:ok, %Transaction{}}
 
-      iex> create_transaction(%{field: bad_value})
+      create_transaction(%{field: bad_value})
       {:error, %Ecto.Changeset{}}
 
   """
