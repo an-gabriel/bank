@@ -3,8 +3,6 @@ defmodule Bank.Account.Context do
   Context module for managing bank accounts.
   """
 
-  alias Bank.Accounts
-
   @doc """
   Retrieves all accounts.
 
@@ -18,9 +16,12 @@ defmodule Bank.Account.Context do
 
   """
   def all(_params) do
-    {:ok, Bank.Accounts.list_accounts()}
-  rescue
-    e -> {:error, e.message}
+    case Bank.Accounts.list_accounts() do
+      accounts when is_list(accounts) ->
+        {:ok, accounts}
+      _ ->
+        {:error, "Failed to retrieve accounts."}
+    end
   end
 
   @doc """
@@ -30,7 +31,7 @@ defmodule Bank.Account.Context do
 
   - `account_params`: A map containing the parameters for creating the account.
     - `account_number`: The account number.
-    - `balance`: The account balance.
+    - `amount`: The initial account balance.
 
   ## Returns
 
@@ -40,29 +41,33 @@ defmodule Bank.Account.Context do
   """
   def create(account_params) do
     account_number = Map.get(account_params, :account_number)
-    balance = Map.get(account_params, :balance)
+    amount = Map.get(account_params, :amount)
 
-    case validate_balance(balance) do
+    case validate_balance(amount) do
       {:error, reason} ->
         {:error, reason}
 
       :ok ->
-        case get_account_by_number(account_number) do
-          nil -> Bank.Accounts.create_account(account_params)
-          _ -> {:error, "The account already exists."}
+        case Bank.Accounts.get_account_by_number(account_number) do
+          nil ->
+            case Bank.Accounts.create_account(account_params) do
+              {:ok, account} ->
+                {:ok, account}
+              {:error, reason} ->
+                {:error, reason}
+            end
+
+          _ ->
+            {:error, "The account already exists."}
         end
     end
   end
 
-  defp validate_balance(balance) do
-    if balance < 0 do
+  defp validate_balance(amount) do
+    if amount < 0 do
       {:error, "The balance cannot be negative."}
     else
       :ok
     end
-  end
-
-  def get_account_by_number(account_number) do
-    Bank.Accounts.get_account_by_number(account_number)
   end
 end
