@@ -2,8 +2,8 @@ defmodule Bank.Account.Context do
   @moduledoc """
   Context module for managing bank accounts.
   """
-  alias Bank.Repo
-  alias Bank.Accounts.Account
+
+  alias Bank.Accounts
 
   @doc """
   Retrieves all accounts.
@@ -18,7 +18,7 @@ defmodule Bank.Account.Context do
 
   """
   def all(_params) do
-    {:ok, Repo.all(Account)}
+    {:ok, Bank.Accounts.list_accounts()}
   rescue
     e -> {:error, e.message}
   end
@@ -47,7 +47,7 @@ defmodule Bank.Account.Context do
         {:error, reason}
 
       :ok ->
-        case get_account_or_nil(account_number) do
+        case get_account_by_number(account_number) do
           nil -> Bank.Accounts.create_account(account_params)
           _ -> {:error, "The account already exists."}
         end
@@ -62,42 +62,7 @@ defmodule Bank.Account.Context do
     end
   end
 
-  defp get_account_or_nil(account_number) do
-    get_account_by_number(account_number)
-  end
-
-  @doc """
-  Updates an existing account.
-
-  ## Parameters
-
-  - `id`: The ID of the account to update.
-  - `account_params`: A map containing the parameters for updating the account.
-
-  ## Returns
-
-  A tuple with the atom `:ok` and the updated account details on success,
-  or a tuple with the atom `:error` and the error message on failure.
-
-  """
-  def update(id, account_params) do
-    case get_account(id) do
-      nil ->
-        {:error, :not_found}
-
-      account ->
-        case Bank.Accounts.update_account(account, account_params) do
-          {:ok, updated_account} -> {:ok, updated_account}
-          {:error, reason} -> {:error, reason}
-        end
-    end
-  end
-
   def get_account_by_number(account_number) do
-    Repo.get_by(Account, account_number: account_number)
-  end
-
-  defp get_account(id) do
-    Repo.get(Account, id)
+    Bank.Accounts.get_account_by_number(account_number)
   end
 end

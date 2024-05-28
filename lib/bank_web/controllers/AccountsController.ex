@@ -8,6 +8,8 @@ defmodule BankWeb.AccountsController do
   alias Bank.Account.Context
   alias BankWeb.ErrorHandler
 
+  require Logger
+
   @doc """
   Creates a new account.
 
@@ -59,39 +61,40 @@ defmodule BankWeb.AccountsController do
   end
 
   @doc """
-  Updates an existing account.
-
-  ## Parameters
-
-  - `conn`: The connection struct.
-  - `id`: The ID of the account to update.
-  - `params`: A map containing the parameters for updating the account.
-    - `account_number`: The account number (optional).
-    - `balance`: The account balance (optional).
-
+  Retrieves an account by account number.
   """
-  def update(conn, %{"id" => id, "account_number" => account_number, "balance" => balance}) do
-    account_params = %{account_number: account_number, balance: balance}
-
-    case Context.update(id, account_params) do
-      {:ok, updated_account} ->
+  def get_by_id(conn, _) do
+    case Map.get(conn.params, "account_number") do
+      nil ->
         conn
-        |> put_status(:ok)
-        |> json(%{
-          account_number: updated_account.account_number,
-          balance: updated_account.balance
-        })
+        |> put_status(:bad_request)
+        |> json(%{error: "Missing or empty account_number parameter"})
 
-      {:error, :not_found} ->
+      "" ->
         conn
-        |> put_status(:not_found)
-        |> json(%{error: "Conta não encontrada"})
+        |> put_status(:bad_request)
+        |> json(%{error: "Missing or empty account_number parameter"})
 
-      {:error, reason} ->
-        conn
-        |> put_status(:unprocessable_entity)
-        |> json(%{error: "Não foi possível atualizar a conta", details: reason})
+      account_number ->
+        Logger.info("Received request for account_number: #{account_number}")
+
+        case Context.get_account_by_number(account_number) do
+          nil ->
+            conn
+            |> put_status(:not_found)
+            |> json(%{error: "Account not found"})
+
+          account ->
+            conn
+            |> put_status(:ok)
+            |> json(%{numero_conta: account.account_number, saldo: account.balance})
+        end
     end
+  rescue
+    _ ->
+      conn
+      |> put_status(:internal_server_error)
+      |> json(%{error: "Internal server error"})
   end
 
   defp handle_error(conn, error) do

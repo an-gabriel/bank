@@ -10,7 +10,7 @@ defmodule BankWeb.Router do
 
     get "/accounts", AccountsController, :list
     post "/accounts/add", AccountsController, :create
-    put "/accounts/update", AccountsController, :update
+    get "/accounts/account/", AccountsController, :get_by_id
   end
 
   # Enable LiveDashboard and Swoosh mailbox preview in development

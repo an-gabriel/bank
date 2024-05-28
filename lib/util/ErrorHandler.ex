@@ -14,6 +14,12 @@ defmodule BankWeb.ErrorHandler do
     |> json(%{error: "Invalid parameters: #{message}"})
   end
 
+  def handle_errors(conn, nil) do
+    conn
+    |> put_status(:internal_server_error)
+    |> json(%{error: "Internal server error: Unknown error"})
+  end
+
   def handle_errors(conn, error) do
     conn
     |> put_status(:internal_server_error)
