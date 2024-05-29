@@ -90,4 +90,5 @@
      iex -S mix phx.server
      ```
 
-Agora você pode visitar [`localhost:4000`](http://localhost:4000) no seu navegador.
+Agora você pode visitar usar o insomia e as collections que estão na raiz do projeto para executar o endpoint
+
