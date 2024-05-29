@@ -19,3 +19,4 @@ defmodule Bank.Transactions.Transaction do
     |> validate_required( [:account_number, :amount, :payment_type])
   end
 end
+''

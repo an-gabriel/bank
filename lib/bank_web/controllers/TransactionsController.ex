@@ -88,7 +88,7 @@ defmodule BankWeb.TransactionsController do
 
       {:error, reason} ->
         conn
-        |> put_status(:error)
+        |> put_status(:unprocessable_entity)
         |> json(%{error: reason})
     end
   end
