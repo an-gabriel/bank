@@ -75,7 +75,7 @@ defmodule Bank.Transaction.Context do
     new_amount = amount - fee
 
     with {:ok, %Account{} = _account} <- get_account(account_number),
-         :ok <- validate_balance(account_number, new_amount)
+         :ok <- validate_balance(account_number, new_amount),
          {:ok, transaction} <-
            Bank.Transactions.create_transaction(Map.put(account_params, :amount, new_amount)) do
       {:ok, %{transaction | amount: new_amount}}
