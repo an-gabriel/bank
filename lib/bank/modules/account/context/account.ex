@@ -2,7 +2,9 @@ defmodule Bank.Account.Context do
   @moduledoc """
   Context module for managing bank accounts.
   """
-
+  alias Bank.Repo
+  alias Bank.Accounts.Account
+  alias Bank.Accounts
   @doc """
   Retrieves all accounts.
 
@@ -106,4 +108,35 @@ defmodule Bank.Account.Context do
   def get_account_by_number(account_number) do
     Bank.Accounts.get_account_by_number(account_number)
   end
+
+  @doc """
+  Atualiza o saldo de uma conta.
+
+  ## Parameters
+
+  - `account_number`: O número da conta.
+  - `new_balance`: O novo saldo a ser atualizado.
+
+  ## Returns
+
+  - `{:ok, %Account{}}`: A conta atualizada se bem-sucedida.
+  - `{:error, reason}`: Uma razão em caso de falha.
+
+  """
+  def update_balance(account_number, new_balance) do
+    case Accounts.get_account_by_number(account_number) do
+      nil ->
+        {:error, "Account not found."}
+
+      %Account{} = account ->
+        case Accounts.update_account(account, %{balance: new_balance}) do
+          {:ok, updated_account} ->
+            {:ok, updated_account}
+
+          {:error, reason} ->
+            {:error, reason}
+        end
+    end
+  end
+
 end

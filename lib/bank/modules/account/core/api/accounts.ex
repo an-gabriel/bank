@@ -4,7 +4,6 @@ defmodule Bank.Accounts do
   """
 
   import Ecto.Query, warn: false
-
   alias Bank.Repo
   alias Bank.Accounts.Account
 
@@ -56,16 +55,17 @@ defmodule Bank.Accounts do
   end
 
   @doc """
-  Updates an account.
+  Atualiza a conta com os atributos fornecidos.
 
-  ## Examples
+  ## Parameters
 
-      iex> update_account(account, %{field: new_value})
-      {:ok, %Account{}}
+  - `account`: A struct `%Account{}` da conta a ser atualizada.
+  - `attrs`: Um mapa contendo os atributos para atualizar.
 
-      iex> update_account(account, %{field: bad_value})
-      {:error, %Ecto.Changeset{}}
+  ## Returns
 
+  - `{:ok, %Account{}}`: A conta atualizada se bem-sucedida.
+  - `{:error, %Ecto.Changeset{}}`: Um changeset com os erros se houver falhas na atualização.
   """
   def update_account(%Account{} = account, attrs) do
     account

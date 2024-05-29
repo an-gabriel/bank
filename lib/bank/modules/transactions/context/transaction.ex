@@ -2,8 +2,9 @@ defmodule Bank.Transaction.Context do
   import Ecto.Query, warn: false
   alias Bank.Repo
   alias Bank.Transactions.Transaction
+  alias Bank.Account.Context, as: AccountContext
   alias Bank.Accounts.Account
-
+  
   require Logger
 
   # fee rate payment type
@@ -77,7 +78,8 @@ defmodule Bank.Transaction.Context do
     with {:ok, %Account{} = _account} <- get_account(account_number),
          :ok <- validate_balance(account_number, new_amount),
          {:ok, transaction} <-
-           Bank.Transactions.create_transaction(Map.put(account_params, :amount, new_amount)) do
+           Bank.Transactions.create_transaction(Map.put(account_params, :amount, new_amount)),
+         {:ok, _} <- AccountContext.update_balance(account_number, new_amount) do
       {:ok, %{transaction | amount: new_amount}}
     else
       {:error, reason} ->
