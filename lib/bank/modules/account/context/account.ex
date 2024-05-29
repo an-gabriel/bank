@@ -5,6 +5,7 @@ defmodule Bank.Account.Context do
   alias Bank.Repo
   alias Bank.Accounts.Account
   alias Bank.Accounts
+
   @doc """
   Retrieves all accounts.
 
@@ -123,20 +124,35 @@ defmodule Bank.Account.Context do
   - `{:error, reason}`: Uma razão em caso de falha.
 
   """
-  def update_balance(account_number, new_balance) do
+  def update_balance(account_number, amount, payment_type) do
     case Accounts.get_account_by_number(account_number) do
       nil ->
         {:error, "Account not found."}
 
-      %Account{} = account ->
-        case Accounts.update_account(account, %{balance: new_balance}) do
-          {:ok, updated_account} ->
-            {:ok, updated_account}
+      %Account{balance: current_balance} = account ->
+        new_balance =
+          case payment_type do
+            "P" -> current_balance + amount
+            "D" -> current_balance + amount
+            "C" -> current_balance - amount
+            _ -> {:error, "Invalid payment type."}
+          end
 
-          {:error, reason} ->
-            {:error, reason}
+        if is_tuple(new_balance) do
+          new_balance
+        else
+          if new_balance < 0 do
+            {:error, "The resulting balance cannot be negative."}
+          else
+            case Accounts.update_account(account, %{balance: new_balance}) do
+              {:ok, updated_account} ->
+                {:ok, updated_account}
+
+              {:error, reason} ->
+                {:error, reason}
+            end
+          end
         end
     end
   end
-
 end

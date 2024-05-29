@@ -4,7 +4,7 @@ defmodule Bank.Transaction.Context do
   alias Bank.Transactions.Transaction
   alias Bank.Account.Context, as: AccountContext
   alias Bank.Accounts.Account
-  
+
   require Logger
 
   # fee rate payment type
@@ -79,7 +79,7 @@ defmodule Bank.Transaction.Context do
          :ok <- validate_balance(account_number, new_amount),
          {:ok, transaction} <-
            Bank.Transactions.create_transaction(Map.put(account_params, :amount, new_amount)),
-         {:ok, _} <- AccountContext.update_balance(account_number, new_amount) do
+         {:ok, _} <- AccountContext.update_balance(account_number, new_amount, payment_type) do
       {:ok, %{transaction | amount: new_amount}}
     else
       {:error, reason} ->
