@@ -14,7 +14,7 @@
 1. **Clone o repositório**
 
    ```sh
-   git clone <URL_DO_SEU_REPOSITORIO>
+   git clone git@github.com:an-gabriel/bank.git
    cd bank
    ```
 
