@@ -6,6 +6,13 @@ defmodule Bank.Transaction.Context do
 
   require Logger
 
+  # fee rate payment type
+  @fee_rates %{
+    "P" => 0.01,
+    "C" => 0.02,
+    "D" => 0.015
+  }
+
   @doc """
   Returns all transactions for a given account number.
   """
@@ -67,26 +74,13 @@ defmodule Bank.Transaction.Context do
     fee = calculate_fee(amount, payment_type)
     new_amount = amount - fee
 
-    case get_account(account_number) do
-      {:ok, %Account{} = _account} ->
-        case validate_balance(account_number, new_amount) do
-          :ok ->
-            do_log("Balance validated")
-
-            case Bank.Transactions.create_transaction(
-                   Map.put(account_params, :amount, new_amount)
-                 ) do
-              {:ok, transaction} ->
-                {:ok, %{transaction | amount: new_amount}}
-
-              {:error, reason} ->
-                {:error, reason}
-            end
-
-          {:error, reason} ->
-            {:error, reason}
-        end
-
+    with {:ok, %Account{} = _account} <- get_account(account_number),
+         :ok <- validate_balance(account_number, new_amount),
+         do_log("Balance validated"),
+         {:ok, transaction} <-
+           Bank.Transactions.create_transaction(Map.put(account_params, :amount, new_amount)) do
+      {:ok, %{transaction | amount: new_amount}}
+    else
       {:error, reason} ->
         {:error, reason}
     end
@@ -97,8 +91,10 @@ defmodule Bank.Transaction.Context do
     {:ok, message}
   end
 
-  defp calculate_fee(amount, "P"), do: amount * 0.01
-  defp calculate_fee(amount, "C"), do: amount * 0.02
-  defp calculate_fee(amount, "D"), do: amount * 0.015
-  defp calculate_fee(_amount, _), do: 0
+  defp calculate_fee(amount, payment_type) do
+    case Map.get(@fee_rates, payment_type) do
+      nil -> 0
+      rate -> amount * rate
+    end
+  end
 end
