@@ -7,6 +7,13 @@ defmodule BankWeb.Router do
 
   scope "/api", BankWeb do
     pipe_through :api
+
+    get "/accounts", AccountsController, :list
+    post "/accounts/add", AccountsController, :create
+    get "/accounts/account/", AccountsController, :get_by_id
+
+    post "/transactions/add", TransactionsController, :create
+    get "/transactions/transaction", TransactionsController, :list_transactions_by_account_number
   end
 
   # Enable LiveDashboard and Swoosh mailbox preview in development
