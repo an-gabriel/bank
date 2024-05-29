@@ -6,7 +6,6 @@ defmodule BankWeb.AccountsController do
   use BankWeb, :controller
 
   alias Bank.Account.Context
-  alias BankWeb.ErrorHandler
 
   require Logger
 
@@ -56,7 +55,9 @@ defmodule BankWeb.AccountsController do
         json(conn, %{accounts: accounts})
 
       {:error, reason} ->
-        handle_error(conn, reason)
+        conn
+        |> put_status(:not_found)
+        |> json(%{error: "not found accounts"})
     end
   end
 
@@ -95,9 +96,5 @@ defmodule BankWeb.AccountsController do
       conn
       |> put_status(:internal_server_error)
       |> json(%{error: "Internal server error"})
-  end
-
-  defp handle_error(conn, error) do
-    ErrorHandler.handle_errors(conn, error)
   end
 end

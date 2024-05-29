@@ -109,6 +109,15 @@ defmodule Bank.Accounts do
   @doc """
   Gets an account by its account number.
 
+  ## Parameters
+
+  - `account_number`: The account number to search for.
+
+  ## Returns
+
+  - `%Account{}`: The account if found.
+  - `nil`: If no account is found with the given account number.
+
   ## Examples
 
       iex> get_account_by_number("1234567890")
@@ -116,7 +125,6 @@ defmodule Bank.Accounts do
 
       iex> get_account_by_number("0987654321")
       nil
-
   """
   def get_account_by_number(account_number) do
     Repo.one(from a in Account, where: a.account_number == ^account_number)
